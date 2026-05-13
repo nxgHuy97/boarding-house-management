@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Hệ thống Quản lý</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <style>
+    .sidebar { width: 280px; height: 100vh; position: fixed; background: #212529; z-index: 1000; }
+    .main-content { margin-left: 280px; width: calc(100% - 280px); padding: 20px; }
+    .nav-link { color: rgba(255,255,255,0.8); padding: 12px 20px; border-radius: 8px; margin: 4px 10px; }
+    .nav-link:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .nav-link.active { background: #0d6efd; color: #fff; }
+    .card-stat { border: none; border-radius: 15px; transition: transform 0.3s; }
+    .card-stat:hover { transform: translateY(-5px); }
+  </style>
+</head>
+<body class="bg-light">
+
+<div class="d-flex">
+  <div class="sidebar d-flex flex-column p-3 shadow">
+    <a th:href="@{/admin/dashboard}" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none px-3">
+      <i class="bi bi-shield-lock-fill fs-3 me-2 text-primary"></i>
+      <span class="fs-4 fw-bold">Admin Panel</span>
+    </a>
+    <hr class="text-secondary">
+    <ul class="nav nav-pills flex-column mb-auto">
+      <li><a th:href="@{/admin/dashboard}" class="nav-link active"><i class="bi bi-speedometer2 me-2"></i> Tổng quan</a></li>
+      <li>
+        <a th:href="@{/admin/users/pending}" class="nav-link">
+          <i class="bi bi-person-check me-2"></i> Duyệt tài khoản
+          <span th:if="${pendingCount > 0}" class="badge bg-danger float-end" th:text="${pendingCount}">0</span>
+        </a>
+      </li>
+      <li>
+        <a th:href="@{/admin/owners}" class="nav-link">
+          <i class="bi bi-key me-2"></i> Quản lý mã dãy trọ
+        </a>
+      </li>
+      <li><a th:href="@{/admin/rooms}" class="nav-link"><i class="bi bi-eye me-2"></i> Giám sát phòng</a></li>
+      <li><a th:href="@{/admin/categories}" class="nav-link"><i class="bi bi-tags me-2"></i> Loại phòng</a></li>
+      <li><a th:href="@{/admin/utilities}" class="nav-link"><i class="bi bi-stars me-2"></i> Tiện ích</a></li>
+    </ul>
+    <hr class="text-secondary">
+    <div class="px-3">
+      <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn btn-outline-light btn-sm w-100"><i class="bi bi-box-arrow-left me-2"></i> Đăng xuất</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="main-content">
+    <header class="mb-4 pb-3 border-bottom d-flex justify-content-between align-items-center">
+      <h2 class="fw-bold text-dark">Bảng điều khiển hệ thống</h2>
+      <div class="text-muted fw-semibold">
+        <i class="bi bi-calendar3 me-1"></i>
+        <span th:text="${#temporals.format(#temporals.createNow(), 'dd/MM/yyyy')}"></span>
+      </div>
+    </header>
+
+    <div class="row g-4">
+      <div class="col-md-3">
+        <div class="card card-stat bg-warning h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-1 fw-bold opacity-75">Chờ phê duyệt</h6>
+            <h2 class="display-6 fw-bold mb-0" th:text="${pendingCount}">0</h2>
+            <a th:href="@{/admin/users/pending}" class="btn btn-sm btn-dark mt-3 rounded-pill px-3">
+              Xem chi tiết <i class="bi bi-arrow-right ms-1"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card card-stat bg-success text-white h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-1 fw-bold opacity-75">Tổng số phòng</h6>
+            <h2 class="display-6 fw-bold mb-0" th:text="${totalRooms}">0</h2>
+            <a th:href="@{/admin/rooms}" class="btn btn-sm btn-light mt-3 rounded-pill px-3 text-success fw-bold">
+              Giám sát
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card card-stat bg-primary text-white h-100 shadow-sm border-0">
+          <div class="card-body">
+            <h6 class="text-uppercase mb-1 fw-bold opacity-75">Tổng người dùng</h6>
+            <h2 class="display-6 fw-bold mb-0" th:text="${totalUsers}">0</h2>
+            <a th:href="@{/admin/users/all}" class="btn btn-sm btn-light mt-3 rounded-pill px-3 text-primary fw-bold">
+              Quản lý chi tiết
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-3">
+        <div class="card card-stat bg-white h-100 shadow-sm border p-2">
+          <h6 class="text-uppercase fw-bold text-muted px-2 pt-1 small">Thao tác nhanh</h6>
+          <div class="d-grid gap-1">
+            <a th:href="@{/admin/users/pending}" class="btn btn-outline-primary btn-sm text-start border-0">
+              <i class="bi bi-person-check me-1"></i> Duyệt tài khoản
+            </a>
+            <a th:href="@{/admin/owners}" class="btn btn-outline-warning btn-sm text-start border-0">
+              <i class="bi bi-key me-1"></i> Quản lý mã dãy trọ
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-5">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold mb-0 text-secondary">Trạng thái hệ thống</h4>
+        <span class="badge bg-info text-dark shadow-sm">Hệ thống ổn định</span>
+      </div>
+      <div class="bg-white rounded-4 shadow-sm p-5 text-center text-muted border">
+        <i class="bi bi-shield-check fs-1 d-block mb-3 text-primary opacity-50"></i>
+        <h5 class="fw-bold text-dark">Chào mừng Admin trở lại</h5>
+        <p class="mb-0">Hiện tại hệ thống có <strong class="text-primary" th:text="${totalUsers}"></strong> người dùng đang hoạt động.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

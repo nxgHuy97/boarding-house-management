@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Quản lý Người Thuê</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-people-fill text-primary"></i> Quản lý Người Thuê</h2>
+        <div>
+            <a th:href="@{/owner/tenants/add}" class="btn btn-success"><i class="bi bi-plus-circle"></i> Thêm người thuê</a>
+            <a th:href="@{/owner/dashboard}" class="btn btn-secondary">Về Dashboard</a>
+        </div>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Họ và tên</th>
+                    <th>Tên đăng nhập/Số điện thoại</th>
+                    <th>Email</th>
+                    <th>Phòng</th>
+                    <th>Mã dãy trọ</th>
+                    <th>Trạng thái</th>
+                    <th class="text-center">Thao tác</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tenantUser : ${tenants}">
+                    <td th:text="${tenantUser.id}"></td>
+                    <td class="fw-bold" th:text="${tenantUser.fullName}"></td>
+                    <td th:text="${tenantUser.username}"></td>
+                    <td th:text="${tenantUser.email}"></td>
+                    <td>
+                        <span th:if="${@tenantService.getTenantByUser(tenantUser) != null and @tenantService.getTenantByUser(tenantUser).room != null}"
+                              th:text="'Phòng ' + ${@tenantService.getTenantByUser(tenantUser).room.roomNumber}">
+                        </span>
+                        <span th:unless="${@tenantService.getTenantByUser(tenantUser) != null and @tenantService.getTenantByUser(tenantUser).room != null}"
+                              class="text-muted">Chưa có phòng</span>
+                    </td>
+                    <td>
+                        <span class="text-danger fw-bold" th:text="${tenantUser.motelCode}"></span>
+                    </td>
+                    <td>
+                        <span class="badge bg-success" th:if="${tenantUser.status == 'ACTIVE'}">Đang ở</span>
+                        <span class="badge bg-warning" th:if="${tenantUser.status == 'PENDING'}">Chờ duyệt</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:if="${@tenantService.getTenantByUser(tenantUser) != null}"
+                           th:href="@{/owner/tenants/edit-room/{id}(id=${@tenantService.getTenantByUser(tenantUser).id})}"
+                           class="btn btn-outline-primary btn-sm" title="Gán/Chuyển phòng">
+                            <i class="bi bi-door-open"></i>
+                        </a>
+
+                        <a th:href="@{/owner/tenants/delete/{id}(id=${tenantUser.id})}"
+                           class="btn btn-outline-danger btn-sm"
+                           onclick="return confirm('Bạn có chắc chắn muốn xóa người thuê này?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(tenants)}">
+                    <td colspan="8" class="text-center text-muted py-4">Không có người thuê nào.</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

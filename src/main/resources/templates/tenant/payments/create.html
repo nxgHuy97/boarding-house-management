@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Gửi yêu cầu thanh toán</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Gửi yêu cầu thanh toán</h2>
+        <a th:href="@{/tenant/invoices}" class="btn btn-secondary">Quay lại hóa đơn</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card shadow-sm mb-3">
+        <div class="card-header">
+            <strong>Thông tin hóa đơn</strong>
+        </div>
+
+        <div class="card-body">
+            <p>
+                <strong>Mã hóa đơn:</strong>
+                <span th:text="${invoice.invoiceCode}"></span>
+            </p>
+
+            <p>
+                <strong>Phòng:</strong>
+                <span th:text="${invoice.room != null ? invoice.room.roomNumber : 'Không có'}"></span>
+            </p>
+
+            <p>
+                <strong>Tổng tiền:</strong>
+                <span th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                VNĐ
+            </p>
+
+            <p>
+                <strong>Đã thanh toán:</strong>
+                <span th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                VNĐ
+            </p>
+
+            <p>
+                <strong>Còn lại:</strong>
+                <span th:text="${#numbers.formatDecimal(invoice.remainingAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                VNĐ
+            </p>
+
+            <p>
+                <strong>Trạng thái:</strong>
+                <span class="badge"
+                      th:classappend="${invoice.status == 'PAID'} ? ' bg-success' :
+                                      (${invoice.status == 'PARTIAL'} ? ' bg-warning text-dark' :
+                                      (${invoice.status == 'OVERDUE'} ? ' bg-danger' : ' bg-secondary'))"
+                      th:text="${invoice.status}">
+                </span>
+            </p>
+        </div>
+    </div>
+
+    <form th:action="@{/tenant/payments/create}" method="post" class="card shadow-sm">
+        <div class="card-body">
+
+            <input type="hidden" name="invoiceId" th:value="${invoice.id}">
+
+            <div class="mb-3">
+                <label class="form-label">Số tiền thanh toán</label>
+                <input type="number"
+                       name="amount"
+                       class="form-control"
+                       min="1000"
+                       step="1000"
+                       th:max="${invoice.remainingAmount}"
+                       th:value="${invoice.remainingAmount}"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Phương thức thanh toán</label>
+                <select name="method" class="form-select" required>
+                    <option value="BANK_TRANSFER">Chuyển khoản ngân hàng</option>
+                    <option value="CASH">Tiền mặt</option>
+                    <option value="MOMO">Momo</option>
+                    <option value="VNPAY">VNPay</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Mã giao dịch</label>
+                <input type="text"
+                       name="transactionCode"
+                       class="form-control"
+                       placeholder="Nhập mã giao dịch nếu có">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Link ảnh minh chứng</label>
+                <input type="text"
+                       name="proofImage"
+                       class="form-control"
+                       placeholder="Dán link ảnh minh chứng nếu có">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ghi chú</label>
+                <textarea name="note"
+                          class="form-control"
+                          rows="3"
+                          placeholder="Ví dụ: Em đã chuyển khoản lúc 20:30"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-success">
+                Gửi yêu cầu thanh toán
+            </button>
+
+            <a th:href="@{/tenant/invoices/{id}(id=${invoice.id})}" class="btn btn-secondary">
+                Hủy
+            </a>
+
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý người dùng - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        .card { border-radius: 15px; border: none; }
+        .table thead { background-color: #212529; color: white; }
+        .badge-status { font-size: 0.85rem; }
+
+        /* Hiệu ứng nhấp nháy cho hàng có yêu cầu Reset mật khẩu */
+        .row-request-password {
+            animation: pulse-red 2s infinite;
+            background-color: #fff5f5 !important;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: inset 0 0 0 0 rgba(220, 53, 69, 0.1); }
+            50% { box-shadow: inset 5px 0 0 0 rgba(220, 53, 69, 0.5); }
+            100% { box-shadow: inset 0 0 0 0 rgba(220, 53, 69, 0.1); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-dark">
+            <i class="bi bi-people-fill text-primary"></i> Quản lý người dùng
+        </h2>
+        <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary shadow-sm">
+            <i class="bi bi-arrow-left"></i> Quay lại Dashboard
+        </a>
+    </div>
+
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0 align-middle">
+                    <thead>
+                    <tr>
+                        <th class="px-4">Tài khoản</th>
+                        <th>Họ và tên</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center">Thao tác</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="user : ${users}" th:classappend="${user.resetPasswordRequested} ? 'row-request-password' : ''">
+                        <td class="px-4 fw-bold">
+                            <span th:text="${user.username}"></span>
+                            <span th:if="${user.resetPasswordRequested}" class="badge bg-danger ms-2" style="font-size: 0.7rem;">
+                                <i class="bi bi-exclamation-circle"></i> YÊU CẦU RESET
+                            </span>
+                        </td>
+                        <td th:text="${user.fullName}"></td>
+                        <td>
+                            <span th:class="'badge ' + ${user.role.name == 'ADMIN' ? 'bg-danger' : (user.role.name == 'OWNER' ? 'bg-success' : 'bg-primary')}"
+                                  th:text="${user.role.name}"></span>
+                        </td>
+                        <td>
+                            <span th:if="${user.status == 'ACTIVE'}" class="badge bg-info text-dark badge-status">Đang hoạt động</span>
+                            <span th:if="${user.status == 'PENDING'}" class="badge bg-warning text-dark badge-status">Chờ phê duyệt</span>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+
+                                <form th:action="@{/admin/users/reset-password/{id}(id=${user.id})}" method="post"
+                                      onsubmit="return confirm('Bạn có chắc chắn muốn reset mật khẩu tài khoản này về mặc định: 123456?')">
+                                    <button type="submit"
+                                            th:classappend="${user.resetPasswordRequested} ? 'btn-danger' : 'btn-warning'"
+                                            class="btn btn-sm px-3 shadow-sm">
+                                        <i class="bi bi-key-fill"></i> Reset Pass
+                                    </button>
+                                </form>
+
+                                <form th:if="${user.role.name != 'ADMIN'}"
+                                      th:action="@{/admin/users/delete/{id}(id=${user.id})}" method="post"
+                                      onsubmit="return confirm('CẢNH BÁO: Hành động này sẽ xóa vĩnh viễn người dùng này. Tiếp tục?')">
+                                    <button type="submit" class="btn btn-danger btn-sm px-3 shadow-sm">
+                                        <i class="bi bi-trash-fill"></i> Xóa
+                                    </button>
+                                </form>
+
+                            </div>
+                        </td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(users)}">
+                        <td colspan="5" class="text-center py-5 text-muted">Không có người dùng nào.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

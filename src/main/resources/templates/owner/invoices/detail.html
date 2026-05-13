@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chi tiết hóa đơn</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Chi tiết hóa đơn</h2>
+
+        <div>
+            <a th:href="@{/owner/payments}" class="btn btn-outline-success">
+                Xem tất cả thanh toán
+            </a>
+
+            <a th:href="@{/owner/invoices}" class="btn btn-secondary">
+                Quay lại
+            </a>
+        </div>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <!-- THÔNG TIN HÓA ĐƠN -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <strong>Mã hóa đơn:</strong>
+            <span th:text="${invoice.invoiceCode}"></span>
+        </div>
+
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        <strong>Phòng:</strong>
+                        <span th:text="${invoice.room != null ? invoice.room.roomNumber : 'Không có'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Người thuê:</strong>
+                        <span th:text="${invoice.tenant != null ? invoice.tenant.fullName : 'Không có'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Tháng/Năm:</strong>
+                        <span th:text="${invoice.invoiceMonth}"></span>/<span th:text="${invoice.invoiceYear}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Hạn thanh toán:</strong>
+                        <span th:text="${invoice.dueDate}"></span>
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <p>
+                        <strong>Trạng thái:</strong>
+                        <span class="badge"
+                              th:classappend="${invoice.status == 'PAID'} ? ' bg-success' :
+                                              (${invoice.status == 'PARTIAL'} ? ' bg-warning text-dark' :
+                                              (${invoice.status == 'OVERDUE'} ? ' bg-danger' : ' bg-secondary'))"
+                              th:text="${invoice.status}">
+                        </span>
+                    </p>
+
+                    <p>
+                        <strong>Ngày thanh toán:</strong>
+                        <span th:text="${invoice.paidDate != null ? invoice.paidDate : 'Chưa thanh toán'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Ngày tạo:</strong>
+                        <span th:text="${invoice.createdAt != null ? invoice.createdAt : 'Không có'}"></span>
+                    </p>
+
+                    <p>
+                        <strong>Cập nhật lần cuối:</strong>
+                        <span th:text="${invoice.updatedAt != null ? invoice.updatedAt : 'Không có'}"></span>
+                    </p>
+                </div>
+            </div>
+
+            <hr>
+
+            <h5>Chi tiết tiền</h5>
+
+            <table class="table table-bordered">
+                <tr>
+                    <th style="width: 250px;">Tiền phòng</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.roomPrice, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Tiền điện</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.electricityAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Tiền nước</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.waterAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Phí dịch vụ</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.serviceAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Giảm giá</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.discountAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Phí phạt</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.penaltyAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr class="table-primary">
+                    <th>Tổng tiền</th>
+                    <td>
+                        <strong>
+                            <span th:text="${#numbers.formatDecimal(invoice.totalAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                            VNĐ
+                        </strong>
+                    </td>
+                </tr>
+
+                <tr>
+                    <th>Đã thanh toán</th>
+                    <td>
+                        <span th:text="${#numbers.formatDecimal(invoice.paidAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                        VNĐ
+                    </td>
+                </tr>
+
+                <tr class="table-warning">
+                    <th>Còn lại</th>
+                    <td>
+                        <strong>
+                            <span th:text="${#numbers.formatDecimal(invoice.remainingAmount, 0, 'COMMA', 0, 'POINT')}"></span>
+                            VNĐ
+                        </strong>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="mb-3">
+                <strong>Ghi chú:</strong>
+                <p th:text="${invoice.note != null ? invoice.note : 'Không có ghi chú'}"></p>
+            </div>
+
+            <a th:if="${invoice.status != 'PAID'}"
+               th:href="@{/owner/invoices/{id}/mark-paid(id=${invoice.id})}"
+               class="btn btn-success">
+                Xác nhận đã thu tiền mặt
+            </a>
+
+        </div>
+    </div>
+
+    <!-- PAYMENT -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">Lịch sử / yêu cầu thanh toán</h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="alert alert-light border">
+                <strong>Payment</strong> là yêu cầu thanh toán do người thuê gửi.
+                Chủ trọ kiểm tra số tiền, phương thức, mã giao dịch rồi bấm
+                <strong>Duyệt</strong> hoặc <strong>Từ chối</strong>.
+            </div>
+
+            <table class="table table-bordered table-hover align-middle"
+                   th:if="${payments != null and !payments.isEmpty()}">
+                <thead class="table-dark">
+                <tr>
+                    <th>Mã thanh toán</th>
+                    <th>Người thuê</th>
+                    <th>Số tiền</th>
+                    <th>Phương thức</th>
+                    <th>Mã giao dịch</th>
+                    <th>Ngày gửi</th>
+                    <th>Trạng thái</th>
+                    <th>Ghi chú</th>
+                    <th>Thao tác</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr th:each="payment : ${payments}">
+                    <td th:text="${payment.paymentCode}"></td>
+
+                    <td th:text="${payment.tenant != null ? payment.tenant.fullName : 'Không có'}"></td>
+
+                    <td>
+                        <strong>
+                            <span th:text="${#numbers.formatDecimal(payment.amount, 0, 'COMMA', 0, 'POINT')}"></span>
+                            VNĐ
+                        </strong>
+                    </td>
+
+                    <td>
+                        <span class="badge bg-light text-dark border" th:text="${payment.method}"></span>
+                    </td>
+
+                    <td th:text="${payment.transactionCode != null ? payment.transactionCode : 'Không có'}"></td>
+
+                    <td th:text="${payment.paidAt}"></td>
+
+                    <td>
+                        <span class="badge"
+                              th:classappend="${payment.status == 'APPROVED'} ? ' bg-success' :
+                                              (${payment.status == 'REJECTED'} ? ' bg-danger' : ' bg-warning text-dark')"
+                              th:text="${payment.status}">
+                        </span>
+                    </td>
+
+                    <td th:text="${payment.note != null ? payment.note : ''}"></td>
+
+                    <td>
+                        <div th:if="${payment.status == 'PENDING'}" class="d-flex gap-1">
+
+                            <form th:action="@{/owner/payments/{id}/approve(id=${payment.id})}" method="post">
+                                <button type="submit"
+                                        class="btn btn-sm btn-success"
+                                        onclick="return confirm('Bạn chắc chắn muốn duyệt thanh toán này?')">
+                                    Duyệt
+                                </button>
+                            </form>
+
+                            <button type="button"
+                                    class="btn btn-sm btn-danger"
+                                    data-bs-toggle="modal"
+                                    th:data-bs-target="'#rejectModalInvoiceDetail' + ${payment.id}">
+                                Từ chối
+                            </button>
+
+                            <!-- MODAL TỪ CHỐI -->
+                            <div class="modal fade"
+                                 th:id="'rejectModalInvoiceDetail' + ${payment.id}"
+                                 tabindex="-1"
+                                 aria-hidden="true">
+
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+
+                                        <form th:action="@{/owner/payments/{id}/reject(id=${payment.id})}" method="post">
+
+                                            <div class="modal-header">
+                                                <h5 class="modal-title">Từ chối thanh toán</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+
+                                            <div class="modal-body">
+                                                <p>
+                                                    Bạn đang từ chối thanh toán:
+                                                    <strong th:text="${payment.paymentCode}"></strong>
+                                                </p>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label">Lý do từ chối</label>
+                                                    <textarea name="reason"
+                                                              class="form-control"
+                                                              rows="3"
+                                                              placeholder="Ví dụ: Chưa nhận được tiền, sai mã giao dịch..."
+                                                              required></textarea>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button type="button"
+                                                        class="btn btn-secondary"
+                                                        data-bs-dismiss="modal">
+                                                    Hủy
+                                                </button>
+
+                                                <button type="submit" class="btn btn-danger">
+                                                    Xác nhận từ chối
+                                                </button>
+                                            </div>
+
+                                        </form>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <span th:if="${payment.status != 'PENDING'}" class="text-muted">
+                            Đã xử lý
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${payments == null or payments.isEmpty()}" class="alert alert-warning">
+                Chưa có yêu cầu thanh toán nào cho hóa đơn này.
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

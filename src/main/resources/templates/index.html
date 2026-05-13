@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Hệ thống quản lý phòng trọ</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body { background-color: #f4f7f6; }
+        .card { border: none; border-radius: 15px; }
+        .welcome-text { font-weight: 700; }
+    </style>
+</head>
+<body class="container mt-5">
+
+<div class="card shadow-lg p-5">
+    <div class="text-center mb-4">
+        <h1 class="text-primary welcome-text">
+            Chào mừng, <span class="text-dark" sec:authentication="name">Người dùng</span>!
+        </h1>
+        <p class="lead text-muted">Bạn đã đăng nhập thành công vào hệ thống quản lý phòng trọ.</p>
+
+        <div class="badge bg-info text-dark">
+            Vai trò: <span sec:authentication="principal.authorities">ROLE</span>
+        </div>
+    </div>
+
+    <hr>
+
+    <div class="row mt-4">
+        <div sec:authorize="hasRole('ADMIN')" class="col-md-12 mb-3">
+            <div class="p-4 border border-danger rounded bg-light">
+                <h3 class="text-danger fw-bold">Khu vực Quản trị (Admin)</h3>
+                <p>Quản lý người dùng, phê duyệt tài khoản và xem báo cáo hệ thống.</p>
+                <a th:href="@{/admin/dashboard}" class="btn btn-danger btn-lg w-100">
+                    Vào Trang Quản Lý Hệ Thống
+                </a>
+            </div>
+        </div>
+
+        <div sec:authorize="hasRole('OWNER')" class="col-md-12 mb-3">
+            <div class="p-4 border border-success rounded bg-light">
+                <h3 class="text-success fw-bold">Khu vực Chủ phòng trọ</h3>
+                <p>Đăng tin cho thuê, quản lý phòng và danh sách người thuê.</p>
+                <a th:href="@{/owner/rooms}" class="btn btn-success btn-lg w-100">
+                    Quản lý phòng của tôi
+                </a>
+            </div>
+        </div>
+
+        <div sec:authorize="hasRole('USER')" class="col-md-12 mb-3">
+            <div class="p-4 border border-primary rounded bg-light">
+                <h3 class="text-primary fw-bold">Khu vực Người thuê</h3>
+                <p>Tìm kiếm phòng trọ, quản lý hợp đồng và thanh toán hóa đơn.</p>
+                <a th:href="@{/rooms}" class="btn btn-primary btn-lg w-100">
+                    Xem danh sách phòng trống
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="btn btn-outline-secondary px-5">
+                <i class="bi bi-box-arrow-right"></i> Đăng xuất khỏi hệ thống
+            </button>
+        </form>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

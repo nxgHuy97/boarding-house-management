@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Tạo hóa đơn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Tạo hóa đơn</h2>
+        <a th:href="@{/owner/invoices}" class="btn btn-secondary">Quay lại</a>
+    </div>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <form th:action="@{/owner/invoices/create}" method="post" class="card shadow-sm">
+        <div class="card-body">
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label">Phòng</label>
+                    <select name="roomId" class="form-select" required>
+                        <option value="">-- Chọn phòng --</option>
+                        <option th:each="room : ${rooms}"
+                                th:value="${room.id}"
+                                th:text="${room.roomNumber + ' - ' + #numbers.formatDecimal(room.price, 0, 'COMMA', 0, 'POINT') + ' VNĐ'}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Tháng</label>
+                    <input type="number" name="month" class="form-control" min="1" max="12" required>
+                </div>
+
+                <div class="col-md-3 mb-3">
+                    <label class="form-label">Năm</label>
+                    <input type="number" name="year" class="form-control" min="2020" required>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Tiền phòng</label>
+                    <input type="number" name="roomPrice" class="form-control" min="0" step="1000" required>
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Tiền điện</label>
+                    <input type="number" name="electricityAmount" class="form-control" min="0" step="1000" value="0">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Tiền nước</label>
+                    <input type="number" name="waterAmount" class="form-control" min="0" step="1000" value="0">
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Phí dịch vụ</label>
+                    <input type="number" name="serviceAmount" class="form-control" min="0" step="1000" value="0">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Giảm giá</label>
+                    <input type="number" name="discountAmount" class="form-control" min="0" step="1000" value="0">
+                </div>
+
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Phí phạt</label>
+                    <input type="number" name="penaltyAmount" class="form-control" min="0" step="1000" value="0">
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Hạn thanh toán</label>
+                <input type="date" name="dueDate" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ghi chú</label>
+                <textarea name="note" class="form-control" rows="3"></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Tạo hóa đơn</button>
+        </div>
+    </form>
+
+</div>
+</body>
+</html>

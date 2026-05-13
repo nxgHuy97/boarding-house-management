@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Thêm phòng mới</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <style>
+    body { background-color: #f8f9fa; }
+    .card { border-radius: 15px; }
+  </style>
+</head>
+<body>
+
+<div class="container py-5" style="max-width: 600px;">
+  <div class="card shadow-sm border-0">
+    <div class="card-header bg-success text-white py-3 text-center">
+      <h4 class="mb-0">Thêm Phòng Mới</h4>
+    </div>
+    <div class="card-body p-4">
+      <form th:action="@{/owner/rooms/save}" th:object="${room}" method="post">
+        <div class="mb-3">
+          <label class="form-label fw-bold">Số phòng:</label>
+          <input type="text" th:field="*{roomNumber}" class="form-control" placeholder="Ví dụ: P101, A205" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Loại phòng:</label>
+          <select th:field="*{category.id}" class="form-select" required>
+            <option value="" disabled selected>-- Chọn loại phòng --</option>
+            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Giá phòng (VNĐ):</label>
+          <input type="number" th:field="*{price}" class="form-control" placeholder="Ví dụ: 2500000" required>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label fw-bold">Trạng thái:</label>
+          <select th:field="*{status}" class="form-select" required>
+            <option value="AVAILABLE">Còn trống</option>
+            <option value="OCCUPIED">Đã thuê</option>
+            <option value="MAINTENANCE">Đang bảo trì</option>
+          </select>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+          <button type="submit" class="btn btn-success btn-lg">Lưu phòng</button>
+          <a th:href="@{/owner/rooms}" class="btn btn-outline-secondary">Hủy bỏ</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
